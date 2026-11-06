@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniAssist AI — Smart University Chatbot</title>
+    <meta
+      name="description"
+      content="An intelligent, professional AI university assistant powered by Google Gemini to help students and faculty with admissions, academic guidance, courses, campus life, and study planning."
+    />
+    <meta property="og:title" content="UniAssist AI — Smart University Chatbot" />
+    <meta
+      property="og:description"
+      content="An intelligent, professional AI university assistant powered by Google Gemini to help students and faculty with admissions, academic guidance, courses, campus life, and study planning."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="theme-light">
+    <!-- Main Application Wrapper -->
+    <div id="app" class="app-container">
+      
+      <!-- Mobile Sidebar Overlay Backdrop -->
+      <div id="sidebar-backdrop" class="sidebar-backdrop" aria-hidden="true"></div>
+
+      <!-- LEFT SIDEBAR -->
+      <aside id="sidebar" class="sidebar" aria-label="Chat History and Navigation">
+        <!-- University & App Header -->
+        <div class="sidebar-header">
+          <div class="brand-wrapper">
+            <div class="brand-crest">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="crest-svg">
+                <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+                <path d="M12 9v5"/>
+                <circle cx="12" cy="17" r="1"/>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <span class="brand-title">UniAssist <span class="badge-ai">AI</span></span>
+              <span class="brand-subtitle">Metropolitan University</span>
+            </div>
+          </div>
+          <button id="btn-close-sidebar" class="icon-btn mobile-only-btn" title="Close Sidebar" aria-label="Close sidebar">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Action: New Chat Button -->
+        <div class="sidebar-actions">
+          <button id="btn-new-chat" class="btn btn-primary new-chat-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.2" fill="none">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>New Consultation</span>
+            <kbd class="shortcut-kbd">Ctrl+K</kbd>
+          </button>
+        </div>
+
+        <!-- Search History Filter -->
+        <div class="sidebar-search">
+          <div class="search-input-wrapper">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="chat-search-input" placeholder="Search previous chats..." aria-label="Search conversation history" />
+            <button id="btn-clear-search" class="clear-search-btn hidden" aria-label="Clear search">×</button>
+          </div>
+        </div>
+
+        <!-- Conversations History List -->
+        <div class="sidebar-content custom-scrollbar">
+          <!-- Bookmarked Section -->
+          <div id="bookmarked-section" class="chat-group hidden">
+            <div class="chat-group-title">
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="currentColor">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+              <span>Pinned Conversations</span>
+            </div>
+            <ul id="bookmarked-chat-list" class="chat-list" role="list"></ul>
+          </div>
+
+          <!-- History List Grouped by Date -->
+          <div class="chat-group">
+            <div class="chat-group-title">
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              <span>Recent Conversations</span>
+            </div>
+            <ul id="recent-chat-list" class="chat-list" role="list">
+              <!-- Dynamically populated -->
+            </ul>
+            <div id="no-chats-msg" class="empty-chats-placeholder hidden">
+              <p>No conversations found</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Access Campus Info Strip -->
+        <div class="sidebar-middle-tools">
+          <button id="btn-open-knowledge" class="sidebar-tool-btn" title="Open Campus Directory & Policies">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            <span>Campus Guide & Directory</span>
+          </button>
+        </div>
+
+        <!-- Sidebar Footer & Student Profile -->
+        <div class="sidebar-footer">
+          <div class="sidebar-footer-actions">
+            <button id="btn-open-settings" class="footer-action-btn" title="Assistant Settings" aria-label="Settings">
+              <svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <span>Settings</span>
+            </button>
+            <button id="btn-clear-all-history" class="footer-action-btn danger-hover" title="Clear All History" aria-label="Clear chat history">
+              <svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" stroke-width="2" fill="none">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear History</span>
+            </button>
+          </div>
+
+          <!-- Student Profile Widget -->
+          <div class="user-profile-card">
+            <div class="profile-avatar">
+              <span class="avatar-initials">AC</span>
+              <span class="online-indicator" title="Student Session Active"></span>
+            </div>
+            <div class="profile-info">
+              <span class="profile-name">Alex Chen</span>
+              <span class="profile-meta">Computer Science • Class '26</span>
+            </div>
+            <span class="profile-badge">Student</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT / MAIN CHAT VIEW -->
+      <main class="main-content">
+        <!-- Top Application Navigation Bar -->
+        <header class="chat-header">
+          <div class="header-left">
+            <button id="btn-toggle-sidebar" class="icon-btn header-toggle-btn" title="Toggle Sidebar (Ctrl+B)" aria-label="Toggle navigation sidebar">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
+              </svg>
+            </button>
+            <div class="header-chat-title-group">
+              <h1 id="current-chat-title" class="chat-title" title="Click to rename">New Academic Consultation</h1>
+              <div class="status-indicator-badge">
+                <span class="pulse-dot"></span>
+                <span id="active-model-badge" class="model-name-text">Gemini 3.1 Flash Lite • Campus Ready</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <!-- Campus Guide quick modal -->
+            <button id="btn-header-guide" class="btn btn-secondary header-btn" title="Quick Campus Information">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span class="desktop-text">Campus Guide</span>
+            </button>
+
+            <!-- Export Chat -->
+            <button id="btn-export-chat" class="btn btn-secondary header-btn" title="Export conversation as file">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span class="desktop-text">Export</span>
+            </button>
+
+            <!-- Theme Toggle -->
+            <button id="btn-toggle-theme" class="icon-btn theme-toggle-btn" title="Toggle Light / Dark Mode" aria-label="Toggle theme">
+              <!-- Sun icon (for dark mode) -->
+              <svg class="sun-icon hidden" viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <!-- Moon icon (for light mode) -->
+              <svg class="moon-icon" viewBox="0 0 24 24" width="19" height="19" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </button>
+          </div>
+        </header>
+
+        <!-- Messages Scrollable Surface -->
+        <div id="messages-container" class="messages-container custom-scrollbar">
+          
+          <!-- WELCOME STATE (Visible when conversation is empty) -->
+          <div id="welcome-screen" class="welcome-screen">
+            <div class="welcome-badge-glow">
+              <div class="welcome-crest-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="welcome-heading-group">
+              <span class="welcome-university-tag">METROPOLITAN STATE UNIVERSITY</span>
+              <h2 class="welcome-title">Welcome to UniAssist AI</h2>
+              <p class="welcome-description">
+                Your intelligent 24/7 campus advisor powered by Google Gemini. Ask questions about admissions, course requirements, GPA calculations, scholarship applications, exam prep, or campus services.
+              </p>
+            </div>
+
+            <!-- Quick Knowledge Summary Bar -->
+            <div class="university-quick-stats">
+              <div class="stat-pill">
+                <span class="stat-dot"></span>
+                <span>Fall & Spring Registration</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-dot"></span>
+                <span>4.0 GPA Grading Scale</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-dot"></span>
+                <span>24/7 Library & Tutoring</span>
+              </div>
+              <div class="stat-pill">
+                <span class="stat-dot"></span>
+                <span>Official Directory Connected</span>
+              </div>
+            </div>
+
+            <!-- Suggested Question Cards Grid -->
+            <div class="suggested-cards-container">
+              <h3 class="suggested-heading">Frequently Explored Topics</h3>
+              <div class="suggested-cards-grid">
+                <!-- Card 1: Admissions -->
+                <button class="suggested-card" data-prompt="What are the freshman and transfer admission requirements and key deadlines for Metropolitan State University?">
+                  <div class="card-icon-wrap icon-admissions">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                      <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                  </div>
+                  <div class="card-content">
+                    <span class="card-category">Admissions</span>
+                    <h4 class="card-title">Admission Requirements & Deadlines</h4>
+                    <p class="card-text">Check GPA minimums, Common App dates, and international requirements.</p>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </button>
+
+                <!-- Card 2: Academic Policies -->
+                <button class="suggested-card" data-prompt="How does the 4.0 GPA scale work, what are the Dean's List requirements, and what is the policy for dropping a class?">
+                  <div class="card-icon-wrap icon-academics">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                  </div>
+                  <div class="card-content">
+                    <span class="card-category">Academic Guidance</span>
+                    <h4 class="card-title">GPA Scale, Dean's List & Add/Drop</h4>
+                    <p class="card-text">Understand grading scales, credit overload, and academic standing rules.</p>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </button>
+
+                <!-- Card 3: Scholarships & Aid -->
+                <button class="suggested-card" data-prompt="What merit-based scholarships, STEM grants, and financial aid opportunities are available for students?">
+                  <div class="card-icon-wrap icon-scholarships">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                      <circle cx="12" cy="8" r="7"></circle>
+                      <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                    </svg>
+                  </div>
+                  <div class="card-content">
+                    <span class="card-category">Financial Aid</span>
+                    <h4 class="card-title">Scholarships & Assistantships</h4>
+                    <p class="card-text">Presidential Honors, STEM Innovation Grants, and research assistantships.</p>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </button>
+
+                <!-- Card 4: Study Strategy -->
+                <button class="suggested-card" data-prompt="Help me design a realistic 4-week study plan for midterm exam preparation across 4 college courses.">
+                  <div class="card-icon-wrap icon-study">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                      <path d="M12 20h9"></path>
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                  </div>
+                  <div class="card-content">
+                    <span class="card-category">Learning Assistance</span>
+                    <h4 class="card-title">Personalized Exam Prep Plan</h4>
+                    <p class="card-text">Break down study schedules, spaced repetition, and review tactics.</p>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </button>
+
+                <!-- Card 5: Campus Life & Library -->
+                <button class="suggested-card" data-prompt="Where are the 24/7 quiet study rooms in Founders Library and how do dining commons hours work?">
+                  <div class="card-icon-wrap icon-campus">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                      <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                  </div>
+                  <div class="card-content">
+                    <span class="card-category">Campus Life</span>
+                    <h4 class="card-title">Library Facilities & Dining Commons</h4>
+                    <p class="card-text">Study room reservations, Makerspace 3D printing, and food options.</p>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </button>
+
+                <!-- Card 6: Academic Calendar -->
+                <button class="suggested-card" data-prompt="What are the official dates for the current academic calendar including breaks and final exams?">
+                  <div class="card-icon-wrap icon-calendar">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                  </div>
+                  <div class="card-content">
+                    <span class="card-category">Calendars</span>
+                    <h4 class="card-title">Academic Calendar & Final Exams</h4>
+                    <p class="card-text">Key dates for semester start, add/drop periods, recesses, and graduation.</p>
+                  </div>
+                  <span class="card-arrow">→</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Message Feed (Populated dynamically) -->
+          <div id="messages-list" class="messages-list"></div>
+
+          <!-- Typing Indicator -->
+          <div id="typing-indicator" class="typing-indicator-row hidden">
+            <div class="ai-avatar typing-avatar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mini-crest">
+                <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/>
+              </svg>
+            </div>
+            <div class="typing-bubble">
+              <span class="typing-status-text">UniAssist AI is synthesizing university guidance...</span>
+              <div class="typing-dots">
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Follow-Up Suggestions Bar (Below latest AI message) -->
+          <div id="followup-suggestions-bar" class="followup-suggestions-bar hidden">
+            <span class="followup-label">💡 Suggested next questions:</span>
+            <div id="followup-chips-container" class="followup-chips-container"></div>
+          </div>
+
+          <!-- Spacer for smooth scroll padding -->
+          <div id="scroll-bottom-anchor"></div>
+        </div>
+
+        <!-- Floating Scroll to Bottom Button -->
+        <button id="btn-scroll-bottom" class="scroll-bottom-floating-btn hidden" aria-label="Scroll to latest message" title="Scroll down">
+          <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2.5" fill="none">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- INPUT FOOTER SECTION -->
+        <div class="input-area-container">
+          <!-- Quick Topic Pills / Chips -->
+          <div class="quick-topics-strip custom-scrollbar">
+            <button class="topic-chip" data-query="Admissions requirements and deadlines for Fall">🎓 Admissions</button>
+            <button class="topic-chip" data-query="GPA calculation and grading policy">📊 GPA & Policies</button>
+            <button class="topic-chip" data-query="Presidential and merit scholarships">💰 Scholarships</button>
+            <button class="topic-chip" data-query="Academic calendar and finals schedule">📅 Calendar</button>
+            <button class="topic-chip" data-query="Founders Library hours and study rooms">🏛️ Campus Facilities</button>
+            <button class="topic-chip" data-query="Office contacts for registrar and admissions">📞 Official Contacts</button>
+          </div>
+
+          <!-- Chat Input Bar -->
+          <div class="chat-input-box">
+            <textarea
+              id="user-input-textarea"
+              class="chat-textarea custom-scrollbar"
+              placeholder="Ask about admissions, courses, grading, campus facilities, or exam prep..."
+              rows="1"
+              maxlength="4000"
+              aria-label="Your university inquiry"
+            ></textarea>
+
+            <div class="input-actions-bar">
+              <div class="input-left-tools">
+                <span id="char-counter" class="char-counter">0 / 4000</span>
+                <button id="btn-clear-input" class="clear-input-icon-btn hidden" title="Clear input text">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+
+              <div class="input-right-buttons">
+                <!-- Stop Generation Button -->
+                <button id="btn-stop-generating" class="btn btn-stop hidden" title="Stop generating response">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                    <rect x="6" y="6" width="12" height="12" rx="2"></rect>
+                  </svg>
+                  <span>Stop</span>
+                </button>
+
+                <!-- Send Message Button -->
+                <button id="btn-send-message" class="btn btn-send" title="Send inquiry (Enter)">
+                  <span>Send</span>
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2.2" fill="none">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust & Disclaimer Notice -->
+          <footer class="chat-disclaimer">
+            <span>
+              UniAssist AI provides official university guidance. For confidential academic records, financial billing, or degree audits, consult the 
+              <button id="btn-disclaimer-registrar" class="disclaimer-link">Registrar's Office</button>.
+            </span>
+          </footer>
+        </div>
+      </main>
+
+      <!-- MODAL: SETTINGS -->
+      <div id="settings-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+        <div class="modal-window">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+              <h3 id="settings-modal-title">UniAssist AI Settings</h3>
+            </div>
+            <button id="btn-close-settings" class="modal-close-btn" aria-label="Close settings">×</button>
+          </div>
+
+          <div class="modal-body custom-scrollbar">
+            <!-- Appearance / Theme -->
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Interface Theme</label>
+                <p class="setting-help">Select light or dark mode for optimal reading comfort.</p>
+              </div>
+              <div class="setting-control">
+                <div class="segmented-control" id="theme-segmented-control">
+                  <button type="button" class="segment-btn active" data-theme="light">Light</button>
+                  <button type="button" class="segment-btn" data-theme="dark">Dark</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gemini Model Selection -->
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="select-model" class="setting-label">Google Gemini Model</label>
+                <p class="setting-help">Configured with free-tier compatible Google AI Studio models.</p>
+              </div>
+              <div class="setting-control">
+                <select id="select-model" class="setting-select">
+                  <option value="gemini-3.1-flash-lite">Gemini 3.1 Flash Lite (Recommended • Fast & Stable)</option>
+                  <option value="gemini-3.5-flash">Gemini 3.5 Flash (Comprehensive & Fast)</option>
+                  <option value="gemini-3.8-flash">Gemini 3.8 Flash (Deep Reasoning)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- AI Reasoning / Thinking Level -->
+            <div class="setting-item">
+              <div class="setting-info">
+                <label for="select-thinking" class="setting-label">Response Reasoning Depth</label>
+                <p class="setting-help">Adjust the depth of academic analysis and explanation structure.</p>
+              </div>
+              <div class="setting-control">
+                <select id="select-thinking" class="setting-select">
+                  <option value="MEDIUM">Balanced (Standard academic guidance)</option>
+                  <option value="LOW">Fast & Concise (Quick answers & facts)</option>
+                  <option value="HIGH">Deep Reasoning (Complex degree planning)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Connection & Health Status -->
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Google AI Studio Backend Status</label>
+                <p class="setting-help">Verify secure backend connection to Gemini service.</p>
+              </div>
+              <div class="setting-control">
+                <div class="connection-status-box">
+                  <div class="status-indicator-row">
+                    <span id="api-status-dot" class="status-dot-neutral"></span>
+                    <span id="api-status-label" class="status-label">Checking server...</span>
+                  </div>
+                  <button id="btn-test-connection" class="btn btn-secondary btn-sm">Test Connection</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sound & Speech -->
+            <div class="setting-item">
+              <div class="setting-info">
+                <label class="setting-label">Speech Synthesis (Read Aloud)</label>
+                <p class="setting-help">Allow text-to-speech recitation for accessibility.</p>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="toggle-speech" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="modal-section-divider"></div>
+            <div class="about-card">
+              <h4>About UniAssist AI</h4>
+              <p>UniAssist AI is a high-performance university virtual assistant built with Vanilla JavaScript, modern responsive CSS3, and an Express Node.js backend integrating Google Gemini via the modern <code>@google/genai</code> SDK.</p>
+              <div class="about-meta-grid">
+                <div><strong>Version:</strong> 2.5.0 (Campus Edition)</div>
+                <div><strong>Engine:</strong> Google Gemini 3.8 Flash</div>
+                <div><strong>Institution:</strong> Metropolitan State Univ</div>
+                <div><strong>Security:</strong> Server-side Key Isolation</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button id="btn-save-settings" class="btn btn-primary">Done</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: CAMPUS GUIDE & DIRECTORY -->
+      <div id="knowledge-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="knowledge-modal-title">
+        <div class="modal-window modal-lg">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+              <div>
+                <h3 id="knowledge-modal-title">Metropolitan University Official Guide</h3>
+                <span class="modal-subtitle">Verified directory, academic calendar, colleges, and campus services</span>
+              </div>
+            </div>
+            <button id="btn-close-knowledge" class="modal-close-btn" aria-label="Close guide">×</button>
+          </div>
+
+          <!-- Knowledge Navigation Tabs -->
+          <div class="guide-tabs-bar">
+            <button class="guide-tab-btn active" data-tab="tab-contacts">📞 Directory & Offices</button>
+            <button class="guide-tab-btn" data-tab="tab-calendar">📅 Academic Calendar</button>
+            <button class="guide-tab-btn" data-tab="tab-colleges">🏫 Colleges & Majors</button>
+            <button class="guide-tab-btn" data-tab="tab-scholarships">💰 Scholarships</button>
+            <button class="guide-tab-btn" data-tab="tab-facilities">🏛️ Campus Facilities</button>
+          </div>
+
+          <div class="modal-body custom-scrollbar">
+            <!-- TAB: Directory -->
+            <div id="tab-contacts" class="guide-tab-pane active">
+              <div class="guide-section-header">
+                <h4>Official University Offices</h4>
+                <p>Contact information for admissions, registrar, advising, and safety services.</p>
+              </div>
+              <div id="directory-cards-container" class="directory-cards-grid">
+                <!-- Dynamically loaded -->
+              </div>
+            </div>
+
+            <!-- TAB: Calendar -->
+            <div id="tab-calendar" class="guide-tab-pane">
+              <div class="guide-section-header">
+                <h4>Academic Calendar 2026-2027</h4>
+                <p>Important dates for enrollment, add/drop periods, recesses, and final examinations.</p>
+              </div>
+              <div id="calendar-content-container" class="calendar-cards-grid"></div>
+            </div>
+
+            <!-- TAB: Colleges -->
+            <div id="tab-colleges" class="guide-tab-pane">
+              <div class="guide-section-header">
+                <h4>Colleges, Schools & Programs</h4>
+                <p>Degrees and popular majors offered across Metropolitan State University.</p>
+              </div>
+              <div id="colleges-content-container" class="colleges-cards-grid"></div>
+            </div>
+
+            <!-- TAB: Scholarships -->
+            <div id="tab-scholarships" class="guide-tab-pane">
+              <div class="guide-section-header">
+                <h4>Scholarships & Financial Aid Programs</h4>
+                <p>Merit awards, need-based grants, and graduate assistantship details.</p>
+              </div>
+              <div id="scholarships-content-container" class="scholarships-cards-grid"></div>
+            </div>
+
+            <!-- TAB: Facilities -->
+            <div id="tab-facilities" class="guide-tab-pane">
+              <div class="guide-section-header">
+                <h4>Campus Facilities & Resources</h4>
+                <p>Hours and resources for libraries, recreation, dining, and wellness centers.</p>
+              </div>
+              <div id="facilities-content-container" class="facilities-cards-grid"></div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <span class="guide-footer-note">All data is verified against the University Academic Senate Catalog.</span>
+            <button id="btn-ask-about-guide" class="btn btn-primary">Ask UniAssist About These</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL: CLEAR HISTORY CONFIRMATION -->
+      <div id="confirm-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+        <div class="modal-window modal-sm">
+          <div class="modal-header">
+            <div class="modal-title-group">
+              <div class="warning-icon-wrap">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+              </div>
+              <h3 id="confirm-modal-title">Clear All Conversations?</h3>
+            </div>
+            <button id="btn-close-confirm" class="modal-close-btn" aria-label="Cancel">×</button>
+          </div>
+          <div class="modal-body">
+            <p>This action will permanently delete all your conversation history and pinned chats stored in this browser. This cannot be undone.</p>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-cancel-clear" class="btn btn-secondary">Cancel</button>
+            <button id="btn-confirm-clear" class="btn btn-danger">Yes, Clear All History</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOAST NOTIFICATION CONTAINER -->
+      <div id="toast-container" class="toast-container" aria-live="polite"></div>
+    </div>
+
+    <!-- Vanilla JavaScript Entry Point -->
+    <script type="module" src="/src/app.js"></script>
+  </body>
+</html>

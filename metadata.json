@@ -1,0 +1,6 @@
+{
+  "name": "UniAssist AI — Smart University Chatbot",
+  "description": "An intelligent, professional AI university assistant powered by Google Gemini to help students and faculty with admissions, academic guidance, courses, campus life, and study planning.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
